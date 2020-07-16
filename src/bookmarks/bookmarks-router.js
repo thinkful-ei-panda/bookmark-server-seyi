@@ -10,8 +10,9 @@ const bodyParser = express.json()
 bookmarksRouter
   .route('/bookmarks')
   .get((req, res) => {
-    res.json(store.bookmarks)
+    res.json(store)
   })
+  
   .post(bodyParser, (req, res) => {
     for (const field of ['title', 'url', 'rating']) {
       if (!req.body[field]) {
@@ -33,7 +34,8 @@ bookmarksRouter
 
     const bookmark = { id: uuid(), title, url, description, rating }
 
-    store.bookmarks.push(bookmark)
+    console.log(store)
+    store.push(bookmark)
 
     logger.info(`Bookmark with id ${bookmark.id} created`)
     res
@@ -47,7 +49,7 @@ bookmarksRouter
   .get((req, res) => {
     const { bookmark_id } = req.params
 
-    const bookmark = store.bookmarks.find(c => c.id == bookmark_id)
+    const bookmark = store.find(c => c.id == bookmark_id)
 
     if (!bookmark) {
       logger.error(`Bookmark with id ${bookmark_id} not found.`)
@@ -61,7 +63,7 @@ bookmarksRouter
   .delete((req, res) => {
     const { bookmark_id } = req.params
 
-    const bookmarkIndex = store.bookmarks.findIndex(b => b.id === bookmark_id)
+    const bookmarkIndex = store.findIndex(b => b.id === bookmark_id)
 
     if (bookmarkIndex === -1) {
       logger.error(`Bookmark with id ${bookmark_id} not found.`)
@@ -70,7 +72,7 @@ bookmarksRouter
         .send('Bookmark Not Found')
     }
 
-    store.bookmarks.splice(bookmarkIndex, 1)
+    store.splice(bookmarkIndex, 1)
 
     logger.info(`Bookmark with id ${bookmark_id} deleted.`)
     res
